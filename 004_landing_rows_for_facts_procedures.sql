@@ -91,5 +91,3 @@ BEGIN CATCH
 	PRINT ERROR_MESSAGE();
 END CATCH
 GO
-EXEC [Cfg].[LF_Superstore]
-select * from [Rpr].[FactSuperstore]
