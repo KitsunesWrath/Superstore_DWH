@@ -1,42 +1,3 @@
-CREATE OR ALTER PROCEDURE [Cfg].[LR_Region] AS
-BEGIN TRY
-	BEGIN TRANSACTION
-
-		DROP TABLE IF EXISTS #tmpRegion
-
-		SELECT DISTINCT
-			ppl.[Region],
-			peopl.[PersonId]
-		INTO
-			#tmpRegion
-		FROM
-			Stg.People ppl
-		JOIN Rpr.People peopl ON peopl.Person = ppl.Person
-
-		INSERT INTO  [Rpr].[Region]([Region], [PersonId])
-
-		SELECT
-			[Region],
-			[PersonId]
-		FROM
-			#tmpRegion
-		EXCEPT
-		SELECT
-			[Region],
-			[PersonId]
-		FROM
-			[Rpr].[Region]
-
-		SELECT @@ROWCOUNT AS RowsAffected
-	COMMIT TRANSACTION
-END TRY
-BEGIN CATCH
-	ROLLBACK TRANSACTION
-	PRINT ERROR_MESSAGE();
-END CATCH
-
-
-
 CREATE OR ALTER PROCEDURE [Cfg].[LR_Order] AS
 BEGIN TRY
 	BEGIN TRANSACTION
@@ -445,6 +406,45 @@ BEGIN CATCH
 	PRINT ERROR_MESSAGE();
 END CATCH
 
+
+
+
+CREATE OR ALTER PROCEDURE [Cfg].[LR_Region] AS
+BEGIN TRY
+	BEGIN TRANSACTION
+
+		DROP TABLE IF EXISTS #tmpRegion
+
+		SELECT DISTINCT
+			ppl.[Region],
+			peopl.[PersonId]
+		INTO
+			#tmpRegion
+		FROM
+			Stg.People ppl
+		JOIN Rpr.People peopl ON peopl.Person = ppl.Person
+
+		INSERT INTO  [Rpr].[Region]([Region], [PersonId])
+
+		SELECT
+			[Region],
+			[PersonId]
+		FROM
+			#tmpRegion
+		EXCEPT
+		SELECT
+			[Region],
+			[PersonId]
+		FROM
+			[Rpr].[Region]
+
+		SELECT @@ROWCOUNT AS RowsAffected
+	COMMIT TRANSACTION
+END TRY
+BEGIN CATCH
+	ROLLBACK TRANSACTION
+	PRINT ERROR_MESSAGE();
+END CATCH
 
 
 

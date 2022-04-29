@@ -1,3 +1,7 @@
+--- INDEPENDENT DIMENSIONS ---
+
+
+
 --DROP TABLE IF EXISTS [Rpr].[Order]
 CREATE TABLE [Rpr].[Order]
 ( 
@@ -11,6 +15,18 @@ CREATE TABLE [Rpr].[Order]
 )
 
 
+
+
+--DROP TABLE IF EXISTS [Rpr].[People]
+CREATE TABLE [Rpr].[People]
+(	
+	PersonId INT IDENTITY(1,1),
+	Person nvarchar(50),
+	CONSTRAINT [PK_People_PersonId] PRIMARY KEY CLUSTERED 
+	(
+		[PersonId] ASC
+	)
+)
 
 
 --DROP TABLE IF EXISTS [Rpr].[Ship]
@@ -28,7 +44,6 @@ CREATE TABLE [Rpr].[Ship]
 
 
 
-
 --DROP TABLE IF EXISTS [Rpr].[Customer]
 CREATE TABLE [Rpr].[Customer]
 (
@@ -39,7 +54,6 @@ CREATE TABLE [Rpr].[Customer]
 		[CustomerId] ASC
 	)
 )
-
 
 
 
@@ -103,21 +117,6 @@ CREATE TABLE [Rpr].[State]
 
 
 
---DROP TABLE IF EXISTS [Rpr].[Region]
-CREATE TABLE [Rpr].[Region]
-(
-	RegionId INT IDENTITY(1,1),
-	PersonId INT FOREIGN KEY REFERENCES [Rpr].[People](PersonId),
-	Region nvarchar(10),
-	CONSTRAINT [PK_Region_RegionId] PRIMARY KEY CLUSTERED 
-	(
-		[RegionId] ASC
-	)
-)
-
-
-
-
 --DROP TABLE IF EXISTS [Rpr].[Product]
 CREATE TABLE [Rpr].[Product]
 (
@@ -160,18 +159,20 @@ CREATE TABLE [Rpr].[Subcategory]
 
 
 
+--- DEPENDENT DIMENSIONS ---
 
---DROP TABLE IF EXISTS [Rpr].[People]
-CREATE TABLE [Rpr].[People]
-(	
-	PersonId INT IDENTITY(1,1),
-	Person nvarchar(50),
-	CONSTRAINT [PK_People_PersonId] PRIMARY KEY CLUSTERED 
+
+--DROP TABLE IF EXISTS [Rpr].[Region]
+CREATE TABLE [Rpr].[Region]
+(
+	RegionId INT IDENTITY(1,1),
+	PersonId INT FOREIGN KEY REFERENCES [Rpr].[People](PersonId),
+	Region nvarchar(10),
+	CONSTRAINT [PK_Region_RegionId] PRIMARY KEY CLUSTERED 
 	(
-		[PersonId] ASC
+		[RegionId] ASC
 	)
 )
-
 
 
 
@@ -200,4 +201,5 @@ CREATE TABLE [Rpr].[FactSuperstore]
 	)
 )
 GO
+
 
