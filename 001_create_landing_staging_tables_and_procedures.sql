@@ -27,6 +27,22 @@ CREATE TABLE [Lnd].[Superstore] (
 
 
 
+CREATE TABLE [Lnd].[Returns] (
+	[Returned] nvarchar(255),
+	[Order ID] nvarchar(255)
+	)
+
+
+
+
+CREATE TABLE [Lnd].[People] (
+	[Person] nvarchar(255),
+	[Region] nvarchar(255)
+	)
+
+
+
+
 /* Staging table */
 
 CREATE TABLE [Stg].[Superstore] (
@@ -55,37 +71,23 @@ CREATE TABLE [Stg].[Superstore] (
 
 
 
-/* Check table */
+CREATE TABLE [Stg].[Returns] (
+	[Returned] nvarchar(5),
+	[Order ID] nvarchar(25)
+	)
 
-CREATE TABLE [Lnd].[Superstore] (
-	[Row ID] nvarchar(255),
-	[Order ID] nvarchar(255),
-	[Order Date] nvarchar(255), 
-	[Ship Date] nvarchar(255),
-	[Ship Mode] nvarchar(255),
-	[Customer ID] nvarchar(255),
-	[Customer Name] nvarchar(255),
-	[Segment] nvarchar(255),
-	[Country/Region] nvarchar(255),
-	[City] nvarchar(255),
-	[State] nvarchar(255),
-	[Postal Code] nvarchar(255),
-	[Region] nvarchar(255),
-	[Product ID] nvarchar(255),
-	[Category] nvarchar(255),
-	[Sub-Category] nvarchar(255),
-	[Product Name] nvarchar(255),
-	[Sales] nvarchar(255),
-	[Quantity] nvarchar(255),
-	[Discount] nvarchar(255),
-	[Profit] nvarchar(255)
-)
 
+
+
+CREATE TABLE [Stg].[People] (
+	[Person] nvarchar(50),
+	[Region] nvarchar(10)
+	)
 
 
 
 /* Check table */
--- DROP TABLE IF EXISTS [Lnd].[Superstore_Check]
+
 CREATE TABLE [Lnd].[Superstore_Check] (
 	[Row ID] nvarchar(255),
 	[Order ID] nvarchar(255),
@@ -115,6 +117,7 @@ CREATE TABLE [Lnd].[Superstore_Check] (
 
 
 /* Landing to staging procedure */
+
 GO
 CREATE OR ALTER PROCEDURE [Cfg].[LS_Superstore] 
 	@AffectedRows INT = NULL OUTPUT,
@@ -374,3 +377,57 @@ AS
 		 THROW;
 	END CATCH
 END 
+
+
+
+
+GO
+CREATE OR ALTER PROCEDURE [Cfg].[LS_People] AS
+BEGIN TRY
+	BEGIN TRANSACTION
+		TRUNCATE TABLE [Stg].[People]
+
+		INSERT INTO [Stg].[People]
+		(
+			[Person],
+			[Region]
+		)
+		SELECT
+			[Person],
+			[Region]
+		FROM
+			[Lnd].[People]
+		SELECT @@ROWCOUNT AS RowsAffected
+	COMMIT TRANSACTION
+END TRY
+BEGIN CATCH
+	ROLLBACK TRANSACTION
+	PRINT ERROR_MESSAGE();
+END CATCH
+
+
+
+
+GO
+CREATE OR ALTER PROCEDURE [Cfg].[LS_Returns] AS
+BEGIN TRY
+	BEGIN TRANSACTION
+		TRUNCATE TABLE [Stg].[Returns]
+
+		INSERT INTO [Stg].[Returns]
+		(
+			[Returned],
+			[Order ID]
+		)
+		SELECT
+			[Returned],
+			[Order ID]
+		FROM
+			[Lnd].[Returns]
+		SELECT @@ROWCOUNT AS RowsAffected
+	COMMIT TRANSACTION
+END TRY
+BEGIN CATCH
+	ROLLBACK TRANSACTION
+	PRINT ERROR_MESSAGE();
+END CATCH
